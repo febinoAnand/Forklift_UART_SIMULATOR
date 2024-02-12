@@ -4,7 +4,14 @@ import time
 import threading
 import serial.tools.list_ports
 
-weightValue = 0.0
+distance = 0.0
+battPower = 0.0
+voltage = 0.0
+current = 0.0
+wattHr = 0.0
+speed = 0.0
+battCapacity = 0
+
 isConnected = False
 startGetValue = False
 comport = ""
@@ -18,7 +25,7 @@ def hello():
 @app.route('/init')
 def initStatus():
 	global isConnected,comport
-	status = "%s,%s,%s"%(isConnected,weightValue,comport)
+	status = "%s,%d,%s"%(isConnected,distance,comport)
 	return status
 
 @app.route('/toggleConnect')
@@ -35,6 +42,7 @@ def toggle():
 			isConnected = True
 			t = threading.Thread(target=getvalue, args=(1,))
 			t.start()
+			print("Thread Started...")
 		except Exception as e:
 			isConnected = False
 			print(e)
@@ -62,18 +70,46 @@ def getComList():
 
 @app.route('/setValue')
 def setValue():
-	global weightValue
-	weightValue = request.args.get('value')
+	global distance
+	global battPower
+	global voltage
+	global current
+	global wattHr
+	global speed
+	global battCapacity
+
+	distance = request.args.get('distance')
+	speed = request.args.get('speed')
+	battPower = request.args.get('battpower')
+	voltage = request.args.get('voltage')
+	current = request.args.get('current')
+	wattHr = request.args.get('watthr')
+	battCapacity = request.args.get('battcapacity')
+	# print(speed)
 	return (str(isConnected))
 
 def getvalue(i):
-    global startGetValue,s,weightValue
-    startGetValue = True
-    while(startGetValue):
-        val = "distance0"+str(weightValue)+"\r\n"
-        # print(val)
-        s.write(val.encode("utf-8"))
-        time.sleep(.05)
+	global startGetValue,s,distance
+	global battPower
+	global voltage
+	global current
+	global wattHr
+	global speed
+	global battCapacity
+
+	startGetValue = True
+	while(startGetValue):
+		val = "EXT&&DIS"+str(distance)+"&"\
+		+"BTP"+str(battPower)+"&"\
+		+"BTV"+str(voltage)+"&"\
+		+"BTA"+str(current)+"&"\
+		+"WHR"+str(wattHr)+"&"\
+		+"SPD"+str(speed)+"&"\
+		+"BTC"+str(battCapacity)\
+		+"??\r\n"
+		# print(val)
+		s.write(val.encode("utf-8"))
+		time.sleep(5)
 
 if __name__ == '__main__':
 	app.run(port=82,debug=True)

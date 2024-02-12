@@ -2,109 +2,11 @@
 <html>
 <head>
 	<title>Com Port Simulator</title>
-<script>
-var rangeValue = 0.0;
-var isGetValueON = false;
-
-function sendRange() {
-  var xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      rangeValue = document.getElementById("amount").value;
-      if(this.response === "True"){
-        isGetValueON = true;
-      }
-      else{
-        isGetValueON = false;
-        document.getElementById("conBtn").innerHTML = "Connect";
-      }
-      // console.log(rangeValue);
-    }
-  };
-  xhttp.open("GET", "setValue?value="+rangeValue, true);
-  xhttp.send();
-  if(isGetValueON){
-    setTimeout('sendRange()', 5000);  
-  }
-  
-}
-
-
-function init(){
-  var xhttp = new XMLHttpRequest();
-  var comportslist;
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      var status = this.response.split(",");
-
-      if(status[0] === "True"){
-        document.getElementById("conBtn").innerHTML = "Disconnect";
-        isGetValueON = true;
-        sendRange();
-        document.getElementById("comports").value = status[2];
-
-      }
-      else{
-        isGetValueON = false; 
-        document.getElementById("conBtn").innerHTML = "Connect";
-      }
-      rangeValue = status[1];
-      setSeekerValue(rangeValue);
-    }
-  };
-  xhttp.open("GET", "init", true);
-  xhttp.send();
-
-  getComList();
-}
-
-function getComList(){
-  var xhttp = new XMLHttpRequest();
-  var comportslist;
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      comportslist = this.response;
-      document.getElementById("comports").innerHTML = comportslist;
-    }
-  };
-  xhttp.open("GET", "getComList", true);
-  xhttp.send();
-}
-
-function setSeekerValue(setValue){
-  document.getElementById("rangeInput").value = setValue;
-  document.getElementById("amount").value = setValue;
-}
-
-
-function toggleConnectFunction(){
-  var xhttp = new XMLHttpRequest();
-  var comport = document.getElementById("comports").value;
-  xhttp.onreadystatechange = function() {
-    if (this.readyState == 4 && this.status == 200) {
-      
-      // document.getElementById("test").innerHTML = this.response;
-
-      if(this.response === 'True'){
-        document.getElementById("conBtn").innerHTML = "Disconnect";
-        isGetValueON = true;
-        sendRange();
-      }
-      else{
-        document.getElementById("conBtn").innerHTML = "Connect";
-        isGetValueON = false;
-      }
-    }
-  };
-  xhttp.open("GET", "toggleConnect?comport="+comport, true);
-  xhttp.send();
-}
-
-</script>
+  <link rel="stylesheet" href="../static/css/style.css">
 </head>
 
 <body onload="init()">
-<h2>Com Port Simulator for Distance</h2>
+<h2>Com Port Simulator for UART data</h2>
 <br>
 
 
@@ -113,18 +15,60 @@ function toggleConnectFunction(){
 	
 </select>
 
+
+
+
+<button id="conBtn" onclick="toggleConnectFunction()">Connect</button>
 <br>
 <br>
 
 <div>
-	<input id="rangeInput" name="weight" type="range" min="0" value ="0" max="1000" step="0.001" oninput="amount.value=rangeInput.value" />
-	<input id="amount" type="number" value="0.0" min="0" max="1000" oninput="rangeInput.value=amount.value" />
+  <label for="rangeInput">Distance :</label>
+	<input id="rangeInput"  name="distance" type="range" min="0" value ="0" max="999999" step="0.1" oninput="amount.value=rangeInput.value" />
+	<input id="amount" type="number" style="width: 100px;" value="0.0" min="0" max="999999" oninput="rangeInput.value=amount.value" />
 </div>
-
 <br>
-
-<button id="conBtn" onclick="toggleConnectFunction()">Connect</button>
+<div>
+  <label for="batteryPower">Battery Power :</label>
+	<input id="batteryPower" name="batteryPower" type="range" min="0" value ="0" max="5000" step="0.01" oninput="batteryPowerNumber.value=batteryPower.value" />
+	<input id="batteryPowerNumber" type="number" style="width: 100px;" value="0.0" min="0" max="5000" oninput="batteryPower.value=batteryPowerNumber.value" />
+</div>
+<br>
+<div>
+  <label for="batteryVoltage">Voltage :</label>
+	<input id="batteryVoltage" name="batteryVoltage" type="range" min="0" value ="0" max="14" step="0.01" oninput="batteryVoltageNumber.value=batteryVoltage.value" />
+	<input id="batteryVoltageNumber" type="number" style="width: 100px;" value="0.0" min="0" max="14" oninput="batteryVoltage.value=batteryVoltageNumber.value" />
+</div>
+<br>
+<div>
+  <label for="batteryAmps">Amps :</label>
+	<input id="batteryAmps" name="batteryAmps" type="range" min="0" value ="0" max="500" step="0.01" oninput="batteryAmpsNumber.value=batteryAmps.value" />
+	<input id="batteryAmpsNumber" type="number" style="width: 100px;" value="0.0" min="0" max="500" oninput="batteryAmps.value=batteryAmpsNumber.value" />
+</div>
+<br>
+<div>
+  <label for="wattHr">Watt Hr :</label>
+	<input id="wattHr" name="wattHr" type="range" min="0" value ="0" max="999999" step="0.1" oninput="wattHrNumber.value=wattHr.value" />
+	<input id="wattHrNumber" type="number" style="width: 100px;" value="0.0" min="0" max="999999" oninput="wattHr.value=wattHrNumber.value" />
+</div>
+<br>
+<div>
+  <label for="speed">Speed :</label>
+	<input id="speed1" name="speed" type="range" min="0" value ="0" max="20.0" step="0.1" oninput="speednumber.value=speed1.value" />
+	<input id="speednumber" type="number" style="width: 100px;" value="0" min="0" max="20.0" oninput="speed1.value=speednumber.value" />
+</div>
+<br>
+<div>
+  <label for="batteryCapacity">Battery Capacity :</label>
+	<input id="batteryCapacity" name="batteryCapacity" type="range" min="1" value ="1" max="5" step="1" oninput="batteryCapacityNumber.value=batteryCapacity.value" />
+	<input id="batteryCapacityNumber" type="number" style="width: 100px;" value="1" min="1" max="5" oninput="batteryCapacity.value=batteryCapacityNumber.value" />
+</div>
+<br>
+<br>
+<br>
 
 <p id='test'></p>
 </body>
+
+<script src="../static/js/main.js"></script>
 </html>

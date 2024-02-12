@@ -1,0 +1,14 @@
+*{
+    padding:0px;
+    margin:0px;
+    box-sizing: border-box;
+}
+body{
+    padding: 10px;
+}
+div{
+    margin-left: 20px;
+}
+div input {
+    margin : 5px;
+}
